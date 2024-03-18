@@ -1,0 +1,45 @@
+stages:
+
+  prepare_base_model:
+    cmd: python src/titanicSpaceShip/pipeline/stage_02_prepare_base_model.py
+    deps:
+      - src/titanicSpaceShip/pipeline/stage_02_prepare_base_model.py
+      - config/config.yaml
+    params:
+      - FEATURES
+      - LEARNING_RATE
+    outs:
+      - artifacts/prepare_base_model/base_model.pt
+
+  training:
+      cmd: python src/titanicSpaceShip/pipeline/stage_03_training.py
+      deps:
+        - src/titanicSpaceShip/pipeline/stage_03_training.py
+        - src/titanicSpaceShip/components/prepare_callbacks.py
+        - config/config.yaml
+        - artifacts/data_ingestion/data_spaceShip.csv
+        - artifacts/prepare_base_model
+      params:
+        - EPOCHS
+        - BATCH_SIZE
+      outs:
+        - artifacts/training/model.pt
+        - artifacts/training/encoder_traindata.pickle
+
+  evaluation:
+    cmd: python src/titanicSpaceShip/pipeline/stage_04_evaluation.py
+    deps:
+      - src/titanicSpaceShip/pipeline/stage_04_evaluation.py
+      - config/config.yaml
+      - artifacts/data_ingestion/data_spaceShip.csv
+      - artifacts/training/model.pt
+      - artifacts/training/encoder_traindata.pickle
+    params:
+      - BATCH_SIZE
+    metrics:
+    - scores.json:
+        cache: false
+    outs:
+      - torchserve/models/spaceship.onnx
+      - torchserve/utils/encoder_traindata.pickle
+  

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InterState Traffic Prediction</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous"> 
+</head>
+
+
+<body class="container mt-5">
+
+    <h1 class="mb-4">Titanic SpaceShip Project</h1>
+
+    <form id="predictionForm">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="HomePlanet">HomePlanet:</label>
+                    <select class="form-control" id="HomePlanet" name="HomePlanet" required>
+                        <option value="Europa">Europa</option>
+                        <option value="Earth">Earth</option>
+                        <option value="Mars">Mars</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="CryoSleep">CryoSleep:</label>
+                    <select class="form-control" id="CryoSleep" name="CryoSleep" required>
+                        <option value="False">False</option>
+                        <option value="True">True</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="Destination">Destination:</label>
+                    <select class="form-control" id="Destination" name="Destination" required>
+                        <option value="TRAPPIST-1e">TRAPPIST-1e</option>
+                        <option value="PSO J318.5-22">PSO J318.5-22</option>
+                        <option value="55 Cancri e">55 Cancri e</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="Age">Age:</label>
+                    <input type="text" class="form-control" id="Age" name="Age" required>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="VIP">VIP:</label>
+                    <select class="form-control" id="VIP" name="VIP" required>
+                        <option value="False">False</option>
+                        <option value="True">True</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="RoomService">RoomService:</label>
+                    <input type="text" class="form-control" id="RoomService" name="RoomService" required>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="FoodCourt">FoodCourt:</label>
+                    <input type="text" class="form-control" id="FoodCourt" name="FoodCourt" required>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="ShoppingMall">ShoppingMall:</label>
+                    <input type="text" class="form-control" id="ShoppingMall" name="ShoppingMall" required>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="Spa">Spa:</label>
+                    <input type="text" class="form-control" id="Spa" name="Spa" required>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="VRDeck">VRDeck:</label>
+                    <input type="text" class="form-control" id="VRDeck" name="VRDeck" required>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" onclick="predictWeather()">Predict</button>
+    </form>
+
+    <div id="predictionResult" class="mt-4" style="display: none;">
+        <h2>Prediction Result</h2>
+        <pre id="resultContent"></pre>
+    </div>
+
+    <script>
+        function predictWeather() {
+            // Create an object with the form data
+            const formData = {
+                'data': {
+                    HomePlanet: [document.getElementById('HomePlanet').value],
+                    CryoSleep: [(document.getElementById('CryoSleep').value).toString()],
+                    Destination: [document.getElementById('Destination').value],
+                    Age: [document.getElementById('Age').value],
+                    VIP: [(document.getElementById('VIP').value).toString()],
+                    RoomService: [document.getElementById('RoomService').value],
+                    FoodCourt: [document.getElementById('FoodCourt').value],
+                    ShoppingMall: [document.getElementById('ShoppingMall').value],
+                    Spa: [document.getElementById('Spa').value],
+                    VRDeck: [document.getElementById('VRDeck').value]
+                }
+            };
+
+            // Make an AJAX request
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/predict', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    // Parse the JSON response
+                    const result = JSON.parse(xhr.responseText);
+
+                    // Display the result on the screen
+                    document.getElementById('resultContent').textContent = JSON.stringify(result, null, 2);
+                    document.getElementById('predictionResult').style.display = 'block';
+                }
+            };
+
+            // Convert the form data to JSON and send the request
+            xhr.send(JSON.stringify(formData));
+        }
+    </script>
+
+</body>
+
+</html>

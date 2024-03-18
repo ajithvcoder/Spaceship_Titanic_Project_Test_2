@@ -1,0 +1,114 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python src/titanicSpaceShip/pipeline/stage_01_data_ingestion.py
+    deps:
+    - path: config/config.yaml
+      hash: md5
+      md5: 9908430d7a1e9e9942f9556df5d52da1
+      size: 879
+    - path: src/titanicSpaceShip/pipeline/stage_01_data_ingestion.py
+      hash: md5
+      md5: 38ddd55b0ee103a6d63f9f3d7e460a45
+      size: 834
+    outs:
+    - path: artifacts/data_ingestion/data_spaceShip.csv
+      hash: md5
+      md5: 2f75b4785c1d1d7e2c778df84fd62cdc
+      size: 600479
+  prepare_base_model:
+    cmd: python src/titanicSpaceShip/pipeline/stage_02_prepare_base_model.py
+    deps:
+    - path: config/config.yaml
+      hash: md5
+      md5: 9908430d7a1e9e9942f9556df5d52da1
+      size: 879
+    - path: src/titanicSpaceShip/pipeline/stage_02_prepare_base_model.py
+      hash: md5
+      md5: e51e31e2f725c5cfa8a24c1e4f6d8792
+      size: 924
+    params:
+      params.yaml:
+        FEATURES: 14
+        LEARNING_RATE: 0.01
+    outs:
+    - path: artifacts/prepare_base_model/base_model.pt
+      hash: md5
+      md5: 1ea1d38199e5a4131a6db0464ebe8502
+      size: 23652
+  training:
+    cmd: python src/titanicSpaceShip/pipeline/stage_03_training.py
+    deps:
+    - path: artifacts/data_ingestion/data_spaceShip.csv
+      hash: md5
+      md5: 2f75b4785c1d1d7e2c778df84fd62cdc
+      size: 600479
+    - path: artifacts/prepare_base_model
+      hash: md5
+      md5: 3486dcd92956a6938bbc25d66048c951.dir
+      size: 23652
+      nfiles: 1
+    - path: config/config.yaml
+      hash: md5
+      md5: 9908430d7a1e9e9942f9556df5d52da1
+      size: 879
+    - path: src/titanicSpaceShip/components/prepare_callbacks.py
+      hash: md5
+      md5: 3e396f212af6118ec98971ab05bda57f
+      size: 1985
+    - path: src/titanicSpaceShip/pipeline/stage_03_training.py
+      hash: md5
+      md5: e7852879346dce2a95ec51b62d9a36d3
+      size: 1220
+    params:
+      params.yaml:
+        BATCH_SIZE: 512
+        EPOCHS: 6
+    outs:
+    - path: artifacts/training/encoder_traindata.pickle
+      hash: md5
+      md5: 3378c8e8e2b8e5cd52c0aa7fd2ea3394
+      size: 723
+    - path: artifacts/training/model.pt
+      hash: md5
+      md5: 94644ace3046e2cd3ca0299144bbf6f1
+      size: 65262
+  evaluation:
+    cmd: python src/titanicSpaceShip/pipeline/stage_04_evaluation.py
+    deps:
+    - path: artifacts/data_ingestion/data_spaceShip.csv
+      hash: md5
+      md5: 2f75b4785c1d1d7e2c778df84fd62cdc
+      size: 600479
+    - path: artifacts/training/encoder_traindata.pickle
+      hash: md5
+      md5: 3378c8e8e2b8e5cd52c0aa7fd2ea3394
+      size: 723
+    - path: artifacts/training/model.pt
+      hash: md5
+      md5: 94644ace3046e2cd3ca0299144bbf6f1
+      size: 65262
+    - path: config/config.yaml
+      hash: md5
+      md5: 9908430d7a1e9e9942f9556df5d52da1
+      size: 879
+    - path: src/titanicSpaceShip/pipeline/stage_04_evaluation.py
+      hash: md5
+      md5: 6637593f7dbb5a907559434ccb26772f
+      size: 876
+    params:
+      params.yaml:
+        BATCH_SIZE: 512
+    outs:
+    - path: scores.json
+      hash: md5
+      md5: 7a6a1bd2aed68668ce991f97127dfc54
+      size: 58
+    - path: torchserve/models/spaceship.onnx
+      hash: md5
+      md5: e7286e8ea5979d0cf52f4fc383e651af
+      size: 20029
+    - path: torchserve/utils/encoder_traindata.pickle
+      hash: md5
+      md5: 3378c8e8e2b8e5cd52c0aa7fd2ea3394
+      size: 723
